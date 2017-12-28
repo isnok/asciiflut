@@ -38,7 +38,10 @@ class DrawResource(Resource):
         color = req_args.get('color')
 
         try:
-            stdscr.addch(y, x, char, curses.color_pair(color))
+            if color is None:
+                stdscr.addch(y, x, char)
+            else:
+                stdscr.addch(y, x, char, curses.color_pair(color))
         except curses.error as ex:
             return {
                 'status': 'curses error',
