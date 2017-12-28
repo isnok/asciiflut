@@ -28,8 +28,13 @@ class DrawResource(Resource):
 
         if char not in ServerConfig.char_whitelist:
             return {
-                'status': 'illegal char',
-                'value': char,
+                'message': 'illegal char',
+                'value': {
+                    'y': y,
+                    'x': x,
+                    'char': char,
+                    'fail': char,
+                }
             }, 403
 
         parser = reqparse.RequestParser()
@@ -44,14 +49,25 @@ class DrawResource(Resource):
                 stdscr.addch(y, x, char, curses.color_pair(color))
         except curses.error as ex:
             return {
-                'status': 'curses error',
-                'value': ex.args,
+                'message': 'curses error',
+                'value': {
+                    'y': y,
+                    'x': x,
+                    'char': char,
+                    'args': req_args,
+                    'fail': ex.args,
+                }
             }, 500
         finally:
             stdscr.refresh()
         return {
-            'status': 'ok',
-            'value': req_args,
+            'message': 'ok',
+            'value': {
+                'y': y,
+                'x': x,
+                'char': char,
+                'args': req_args,
+            }
         }
 
 api.add_resource(DrawResource, '/draw/<int:y>/<int:x>/<int:char>/')
