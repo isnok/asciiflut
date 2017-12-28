@@ -14,22 +14,42 @@ def req(url):
     else:
         print(rsp.status_code)
 
+def draw_api(y, x, char):
+    req(SERVER_DRAW_URL.format(y=y,x=x,char=char))
+
+
 @click.group()
 def main():
     pass
+
+
+@main.command()
+@click.argument('y', type=int)
+@click.argument('x', type=int)
+@click.argument('what', type=str)
+def draw(y, x, what):
+    for c in what:
+        draw_api(y, x, ord(c))
+        x += 1
 
 @main.command()
 @click.argument('y', type=int)
 @click.argument('x', type=int)
 @click.argument('char', type=int)
-def draw(y, x, char):
-    req(SERVER_DRAW_URL.format(y=y,x=x,char=char))
+def draw_char(y, x, char):
+    draw_api(y, x, char)
+
 
 @main.command()
-def devblock():
-    for y in range(2,8):
-        for x in range(3,8):
-            req(SERVER_DRAW_URL.format(y=y,x=x,char=42+y))
+@click.argument('y1', type=int)
+@click.argument('y2', type=int)
+@click.argument('x1', type=int)
+@click.argument('x2', type=int)
+@click.argument('char', type=int)
+def draw_rect(y1, y2, x1, x2, char):
+    for y in range(y1,y2+1):
+        for x in range(x1,x2+1):
+            draw_api(y, x, char)
 
 
 if __name__ == '__main__':
