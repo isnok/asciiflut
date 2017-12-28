@@ -1,7 +1,9 @@
 # server
 flask
-Flask-LogConfig
+#Flask-LogConfig
 
 # client
 requests
+
+# both
 click

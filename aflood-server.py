@@ -4,12 +4,10 @@ import click
 import curses
 from flask import Flask, request
 
-from server_config import MyConfig
-from flask_logconfig import LogConfig
+from server_config import MyConfig as ServerConfig
 
 app = Flask(__name__)
-# app.config.from_object(MyConfig)
-# _logcfg = LogConfig(app)
+app.config.from_object(ServerConfig)
 
 import logging
 log = logging.getLogger('werkzeug')
@@ -49,8 +47,6 @@ def draw_char(y, x, char):
 
 @click.command()
 def main():
-    print("Hey!")
-    # curses.wrapper(serve_screen)
     app.run()
     curses.endwin()
 
