@@ -1,0 +1,7 @@
+# server
+flask
+Flask-LogConfig
+
+# client
+requests
+click
