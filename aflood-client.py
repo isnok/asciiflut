@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import urllib
 import requests
 import click
 
@@ -11,8 +12,11 @@ def req(url):
     rsp = requests.get(url)
     print("{} - {}".format(rsp.status_code, rsp.text))
 
-def draw_api(y, x, char):
-    req(SERVER_DRAW_URL.format(y=y,x=x,char=char))
+def draw_api(y, x, char, color=None):
+    url = SERVER_DRAW_URL.format(y=y,x=x,char=char)
+    if color is not None:
+        url += '?' + urllib.parse.urlencode({'color': color})
+    req(url)
 
 
 @click.group()
@@ -21,12 +25,13 @@ def main():
 
 
 @main.command()
+@click.option('-c', '--color', type=int, default=None)
 @click.argument('y', type=int)
 @click.argument('x', type=int)
 @click.argument('what', type=str)
-def draw(y, x, what):
+def draw(y, x, what, color):
     for c in what:
-        draw_api(y, x, ord(c))
+        draw_api(y, x, ord(c), color=color)
         x += 1
 
 @main.command()

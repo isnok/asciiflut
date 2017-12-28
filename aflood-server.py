@@ -3,7 +3,7 @@
 import click
 import curses
 from flask import Flask, request, render_template, abort
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 
 from server_config import MyConfig as ServerConfig
 
@@ -32,16 +32,23 @@ class DrawResource(Resource):
                 'value': char,
             }, 403
 
+        parser = reqparse.RequestParser()
+        parser.add_argument('color', type=int, help='color code', required=False)
+        req_args = parser.parse_args()
+        color = req_args.get('color')
+
         try:
-            stdscr.addch(y, x, char)
-        except:
+            stdscr.addch(y, x, char, curses.color_pair(color))
+        except curses.error as ex:
             return {
                 'status': 'curses error',
+                'value': ex.args,
             }, 500
         finally:
             stdscr.refresh()
         return {
             'status': 'ok',
+            'value': req_args,
         }
 
 api.add_resource(DrawResource, '/draw/<int:y>/<int:x>/<int:char>/')
@@ -62,7 +69,7 @@ def do_foo():
     try:
         for i in range(0, 255):
             stdscr.addstr(str(i), curses.color_pair(i))
-    except curses.ERR:
+    except curses.error as ex:
         # End of screen reached
         pass
     stdscr.refresh()
@@ -88,6 +95,10 @@ def init_screen():
 
     curses.start_color()
     curses.use_default_colors()
+
+    for i in range(0, curses.COLOR_PAIRS):
+        curses.init_pair(i + 1, i, -1)
+        #curses.init_pair(i, i, -1)
 
     # stdscr.refresh()
 
