@@ -6,12 +6,9 @@ from flask import Flask, request, render_template, abort
 
 from server_config import MyConfig as ServerConfig
 
-app = Flask(__name__)
+app_name = ServerConfig.server_name if hasattr(ServerConfig, 'server_name') else __name__
+app = Flask(app_name)
 app.config.from_object(ServerConfig)
-
-import logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
 
 stdscr = None
 
@@ -47,6 +44,14 @@ def do_foo():
 
 
 @app.before_first_request
+def disable_console_logging():
+
+    import logging
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+
+
+@app.before_first_request
 def init_screen():
 
     global stdscr
@@ -60,7 +65,6 @@ def init_screen():
 
 @click.command()
 def main():
-    print("Server startup... waiting for first request")
     app.run()
     curses.endwin()
 
