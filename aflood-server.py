@@ -3,12 +3,15 @@
 import click
 import curses
 from flask import Flask, request, render_template, abort
+from flask_restful import Resource, Api
 
 from server_config import MyConfig as ServerConfig
 
 app_name = ServerConfig.server_name if hasattr(ServerConfig, 'server_name') else __name__
 app = Flask(app_name)
 app.config.from_object(ServerConfig)
+
+api = Api(app)
 
 stdscr = None
 
@@ -19,16 +22,39 @@ def index_page():
     }
     return render_template('index.html.j2', **ctx)
 
+class DrawResource(Resource):
 
-@app.route('/draw/<int:y>/<int:x>/<int:char>/')
-def draw_char(y, x, char):
+    def get(self, y, x, char):
 
-    if char not in ServerConfig.char_whitelist:
-        abort(403)
+        if char not in ServerConfig.char_whitelist:
+            return {
+                'status': 'illegal char',
+                'value': char,
+            }, 403
 
-    stdscr.addch(y, x, char)
-    stdscr.refresh()
-    return "Yes"
+        try:
+            stdscr.addch(y, x, char)
+        except:
+            return {
+                'status': 'curses error',
+            }, 500
+        finally:
+            stdscr.refresh()
+        return {
+            'status': 'ok',
+        }
+
+api.add_resource(DrawResource, '/draw/<int:y>/<int:x>/<int:char>/')
+
+# @app.route('/draw/<int:y>/<int:x>/<int:char>/')
+# def draw_char(y, x, char):
+
+    # if char not in ServerConfig.char_whitelist:
+        # abort(403)
+
+    # stdscr.addch(y, x, char)
+    # stdscr.refresh()
+    # return "Yes"
 
 
 @app.route('/test/')
@@ -58,8 +84,11 @@ def init_screen():
     if stdscr is None:
         stdscr = curses.initscr()
 
+    curses.curs_set(False)
+
     curses.start_color()
     curses.use_default_colors()
+
     # stdscr.refresh()
 
 

@@ -9,10 +9,7 @@ SERVER_DRAW_URL = SERVER_HOST + 'draw/{y}/{x}/{char}/'
 def req(url):
     print("Hi! {}".format(url))
     rsp = requests.get(url)
-    if rsp.status_code == 200:
-        print(rsp.text)
-    else:
-        print(rsp.status_code)
+    print("{} - {}".format(rsp.status_code, rsp.text))
 
 def draw_api(y, x, char):
     req(SERVER_DRAW_URL.format(y=y,x=x,char=char))

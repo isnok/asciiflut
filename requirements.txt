@@ -1,6 +1,6 @@
 # server
 flask
-#Flask-LogConfig
+Flask-RESTful
 
 # client
 requests
