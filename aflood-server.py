@@ -7,8 +7,7 @@ from flask_restful import Resource, Api, reqparse
 
 from server_config import MyConfig as ServerConfig
 
-app_name = ServerConfig.server_name if hasattr(ServerConfig, 'server_name') else __name__
-app = Flask(app_name)
+app = Flask(__name__)
 app.config.from_object(ServerConfig)
 
 api = Api(app)
@@ -18,11 +17,14 @@ stdscr = None
 @app.route('/')
 def index_page():
     ctx = {
-        'config': ServerConfig
+        'realm': ServerConfig.realm,
     }
     return render_template('index.html.j2', **ctx)
 
 class DrawResource(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('color', type=int, help='color code', required=False)
 
     def get(self, y, x, char):
 
@@ -37,9 +39,7 @@ class DrawResource(Resource):
                 }
             }, 403
 
-        parser = reqparse.RequestParser()
-        parser.add_argument('color', type=int, help='color code', required=False)
-        req_args = parser.parse_args()
+        req_args = self.parser.parse_args()
         color = req_args.get('color')
 
         try:

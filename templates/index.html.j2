@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{{config.server_name}} - AsciiFlut</title>
+        <title>{{realm}} - AsciiFlut</title>
     </head>
     <body>
-        Server: {{config.server_name}}<br/>
-        Chars: <pre>{{config.whitelist}}</pre>
+
+        <h1>Welcome to {{realm}}!</h1>
+        You have found the index page of this <a href="https://github.com/isnok/asciiflut">asciiflut</a> server.
+        The draw API is located at <a href="{{ url_for('drawresource', y=10,x=10,char=42) }}">/draw/&lt;Y&gt;/&lt;X&gt;/&lt;CHAR&gt;/</a>.
+
+        <h2>How to participate</h2>
+        Clone the repo from <a href="https://github.com/isnok/asciiflut">github</a> and use the python client to send text, or write your own in your favourite language.
+        Imrpovements on the server, templates, docs and more are appreciated.
+        Just open a pull request.
+
+        <h2>Can I set up my own asciiflut?</h2>
+        Yes of course.
+        For now you will have to use your intuition on the code provided in the repo.
+        Reading the source like a pythonic yedi help a it will eventually and succeed you will finally.
+        Maybe it will also be documented one day...
+
     </body>
 </html>
